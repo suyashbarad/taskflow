@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<!-- Add Task Form -->
+<section class="add-task">
+    <h2>Add New Task</h2>
+    <form action="{{ url_for('add_task') }}" method="POST">
+        <div class="form-group">
+            <label for="title">Title <span class="required">*</span></label>
+            <input type="text" id="title" name="title" placeholder="Enter task title" required>
+        </div>
+        <div class="form-group">
+            <label for="description">Description</label>
+            <textarea id="description" name="description" rows="3"
+                      placeholder="Enter task description (optional)"></textarea>
+        </div>
+        <button type="submit" class="btn btn-add">Add Task</button>
+    </form>
+</section>
+
+<!-- Task List -->
+<section class="task-list">
+    <h2>Your Tasks ({{ tasks | length }})</h2>
+
+    {% if tasks %}
+        {% for task in tasks %}
+            <div class="task-card {{ 'completed' if task.completed }}">
+                <div class="task-content">
+                    <h3 class="task-title">{{ task.title }}</h3>
+                    {% if task.description %}
+                        <p class="task-desc">{{ task.description }}</p>
+                    {% endif %}
+                    <span class="task-date">
+                        Created: {{ task.created_at.strftime('%b %d, %Y at %I:%M %p') }}
+                    </span>
+                </div>
+                <div class="task-actions">
+                    <a href="{{ url_for('complete_task', task_id=task.id) }}"
+                       class="btn btn-complete"
+                       title="{{ 'Mark as pending' if task.completed else 'Mark as completed' }}">
+                        {{ '↩ Undo' if task.completed else '✓ Done' }}
+                    </a>
+                    <a href="{{ url_for('delete_task', task_id=task.id) }}"
+                       class="btn btn-delete"
+                       onclick="return confirm('Are you sure you want to delete this task?')"
+                       title="Delete task">
+                        🗑 Delete
+                    </a>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="empty-state">
+            <p>🎉 No tasks yet! Add one above to get started.</p>
+        </div>
+    {% endif %}
+</section>
+
+{% endblock %}
